@@ -9,13 +9,13 @@ example
     local Terebi = require 'terebi'
 
     function love.load(arg)
-      input = initializeSomeDopeAsHeckInputLibrary()
-
       -- Set nearest-neighbour scaling, disables mouse.
       Terebi.initializeLoveDefaults()
 
       -- Parameters: game width, game height, starting scale factor
       screen = Terebi.newScreen(320, 240, 2)
+
+      input = initializeSomeDopeAsHeckInputLibrary()
     end
 
     function love.update(dt)
