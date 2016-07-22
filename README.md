@@ -9,7 +9,7 @@ example
     local Terebi = require 'terebi'
 
     function love.load(arg)
-      -- Set nearest-neighbour scaling, disables mouse.
+      -- Set nearest-neighbour scaling, disables mouse. Calling this is optional.
       Terebi.initializeLoveDefaults()
 
       -- Parameters: game width, game height, starting scale factor
