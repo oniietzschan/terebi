@@ -40,25 +40,18 @@ function Screen:setScale(scale)
 
   self.scale = scale
 
+  self:resizeWindow()
   self:updateDrawOffset()
-
-  love.window.setMode(self.width * scale, self.height * scale)
 
   return self
 end
 
-function Screen:updateDrawOffset()
-  if love.window.getFullscreen() then
-    -- When fullscreen, center screen on monitor
-    local desktopW, desktopH = love.window.getDesktopDimensions()
-    local scaledWidth  = self.width * self.scale
-    local scaledHeight = self.height * self.scale
-    self.drawOffsetX = math.floor((desktopW - scaledWidth) / 2)
-    self.drawOffsetY = math.floor((desktopH - scaledHeight) / 2)
-
-  else
-    self.drawOffsetX = 0
-    self.drawOffsetY = 0
+function Screen:resizeWindow()
+  local currentW, currentH, flags = love.window.getMode()
+  local newW = self.scale * self.width
+  local newH = self.scale * self.height
+  if currentW ~= newW or currentH ~= newH then
+    love.window.setMode(newW, newH, flags)
   end
 end
 
@@ -82,6 +75,7 @@ function Screen:toggleFullscreen()
   else
     self:setMaxScale()
     love.window.setFullscreen(true)
+    self:updateDrawOffset()
   end
 end
 
@@ -91,6 +85,21 @@ function Screen:setMaxScale()
   local maxScaleY = math.floor(desktopH / self.height)
   local scale = math.min(maxScaleX, maxScaleY)
   self:setScale(scale)
+end
+
+function Screen:updateDrawOffset()
+  if love.window.getFullscreen() then
+    -- When fullscreen, center screen on monitor
+    local desktopW, desktopH = love.window.getDesktopDimensions()
+    local scaledWidth  = self.width * self.scale
+    local scaledHeight = self.height * self.scale
+    self.drawOffsetX = math.floor((desktopW - scaledWidth) / 2)
+    self.drawOffsetY = math.floor((desktopH - scaledHeight) / 2)
+
+  else
+    self.drawOffsetX = 0
+    self.drawOffsetY = 0
+  end
 end
 
 function Screen:draw()
