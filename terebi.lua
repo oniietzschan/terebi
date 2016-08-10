@@ -50,7 +50,7 @@ function Screen:resizeWindow()
   local currentW, currentH, flags = love.window.getMode()
   local newW = self.scale * self.width
   local newH = self.scale * self.height
-  if currentW ~= newW or currentH ~= newH then
+  if not love.window.getFullscreen() and (currentW ~= newW or currentH ~= newH) then
     love.window.setMode(newW, newH, flags)
   end
 end
