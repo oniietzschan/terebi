@@ -106,14 +106,9 @@ function Screen:draw()
   love.graphics.setCanvas()
   love.graphics.setColor(255, 255, 255, 255)
 
-  local x, y = self:getDrawOffset()
   love.graphics.draw(self.canvas, self.drawOffsetX, self.drawOffsetY, 0, self.scale, self.scale)
 
   return self
-end
-
-function Screen:getDrawOffset()
-  return 0, 0
 end
 
 
