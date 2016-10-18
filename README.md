@@ -35,11 +35,11 @@ function love.update(dt)
 end
 
 function love.draw()
-  lg.setCanvas(screen:getCanvas())
+  love.graphics.setCanvas(screen:getCanvas())
 
   -- Your drawing logic starts here.
-  lg.setColor(150, 181 , 218)
-  lg.rectangle('fill', 50, 50, 50, 50)
+  love.graphics.setColor(150, 181 , 218)
+  love.graphics.rectangle('fill', 50, 50, 50, 50)
   -- Your drawing logic ends here.
 
   screen:draw()
