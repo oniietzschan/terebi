@@ -3,8 +3,6 @@ local Terebi = {}
 
 
 function Terebi.initializeLoveDefaults()
-  love.mouse.setVisible(false)
-
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.graphics.setLineStyle('rough')
 end
@@ -30,6 +28,10 @@ end
 
 function Screen:getCanvas()
   return self.canvas
+end
+
+function Screen:getScale()
+  return self.scale
 end
 
 function Screen:setScale(scale)

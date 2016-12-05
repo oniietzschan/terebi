@@ -10,7 +10,6 @@ describe('Terebi:', function()
   before_each(function()
     _G.love = {
       graphics = {},
-      mouse = {},
       window = {},
     }
     _G.love.graphics.newCanvas = spy.new(function(w, h)
@@ -31,7 +30,6 @@ describe('Terebi:', function()
     before_each(function()
       _G.love.graphics.setDefaultFilter = noop()
       _G.love.graphics.setLineStyle = noop()
-      _G.love.mouse.setVisible = noop()
     end)
 
     it('It should call correct love2d methods.', function()
@@ -39,7 +37,6 @@ describe('Terebi:', function()
 
       assert.spy(love.graphics.setDefaultFilter).was.called_with('nearest', 'nearest')
       assert.spy(love.graphics.setLineStyle).was.called_with('rough')
-      assert.spy(love.mouse.setVisible).was.called_with(false)
     end)
   end)
 
@@ -52,6 +49,7 @@ describe('Terebi:', function()
       assert.are.same(320, screen.width)
       assert.are.same(240, screen.height)
       assert.are.same({320, 240}, screen:getCanvas())
+      assert.are.same(2, screen:getScale())
     end)
   end)
 end)
