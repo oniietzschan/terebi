@@ -3,8 +3,8 @@ terebi
 
 A simple library to handle pixel-perfect scaling of window content in Love2D.
 
-[![Build Status](https://travis-ci.org/AKB1488/terebi.svg?branch=master)](https://travis-ci.org/AKB1488/terebi)
-[![Coverage Status](https://coveralls.io/repos/github/AKB1488/terebi/badge.svg?branch=master)](https://coveralls.io/github/AKB1488/terebi?branch=master)
+[![Build Status](https://travis-ci.org/oniietzschan/terebi.svg?branch=master)](https://travis-ci.org/oniietzschan/terebi)
+[![Coverage Status](https://coveralls.io/repos/github/oniietzschan/terebi/badge.svg?branch=master)](https://coveralls.io/github/oniietzschan/terebi?branch=master)
 
 Example
 -------
