@@ -79,6 +79,13 @@ describe('Terebi:', function()
         assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
       end)
 
+      it('setScale should do nothing when passed an invalid number', function()
+        screen:setScale(0)
+        screen:setScale(-1)
+
+        assert.spy(love.window.setMode).was_not.called()
+      end)
+
       it('increaseScale should set the scale', function()
         screen:increaseScale()
 
