@@ -29,5 +29,6 @@ notifications:
     on_failure: always
 
 after_success:
+  - cp luacov.stats.out luacov.report.out
   - bash <(curl -s https://codecov.io/bash)
   - luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
