@@ -16,7 +16,7 @@ describe('Terebi:', function()
       return {w, h}
     end)
     _G.love.window.getDesktopDimensions = spy.new(function()
-      return 800, 600
+      return 1600, 1200
     end)
     _G.love.window.getFullscreen = spy.new(function()
       return false
@@ -62,6 +62,53 @@ describe('Terebi:', function()
 
     it('getScale should return scale', function()
       assert.are.same(2, screen:getScale())
+    end)
+
+    describe('When changing Screen scale:', function()
+      before_each(function()
+        _G.love.window.getMode = spy.new(function()
+          return 640, 480, {'flags'}
+        end)
+        _G.love.window.setMode = noop()
+      end)
+
+      it('setScale should set the scale', function()
+        screen:setScale(1)
+
+        assert.are.same(1, screen._scale)
+        assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+      end)
+
+      it('increaseScale should set the scale', function()
+        screen:increaseScale()
+
+        assert.are.same(3, screen._scale)
+        assert.spy(love.window.setMode).was.called_with(960, 720, {'flags'})
+      end)
+
+      it('decreaseScale should set the scale', function()
+        screen:decreaseScale()
+
+        assert.are.same(1, screen._scale)
+        assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+      end)
+
+      it('setMaxScale should set the scale', function()
+        screen:setMaxScale()
+
+        assert.are.same(5, screen._scale)
+        assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
+      end)
+
+      it('toggleFullscreen should toggle fullscreen and maximize scale', function()
+        _G.love.window.setFullscreen = noop()
+
+        screen:toggleFullscreen()
+
+        assert.are.same(5, screen._scale)
+        assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
+        assert.spy(love.window.setFullscreen).was.called_with(true)
+      end)
     end)
 
     it('draw should draw to canvas', function()
