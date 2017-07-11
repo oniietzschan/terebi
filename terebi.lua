@@ -18,97 +18,116 @@ function Terebi.newScreen(...)
 end
 
 function Screen:initialize(width, height, scale)
-  self.width = width
-  self.height = height
-  self.canvas = love.graphics.newCanvas(width, height)
+  self._width = width
+  self._height = height
+  self._canvas = love.graphics.newCanvas(width, height)
 
   return self
     :setScale(scale)
-end
-
-function Screen:getCanvas()
-  return self.canvas
+    :_saveScale()
 end
 
 function Screen:getScale()
-  return self.scale
+  return self._scale
 end
 
 function Screen:setScale(scale)
   local desktopW, desktopH = love.window.getDesktopDimensions()
-  if scale <= 0 or (self.width * scale > desktopW) or (self.height * scale > desktopH) then
-    return
+  if scale <= 0 or (self._width * scale > desktopW) or (self._height * scale > desktopH) then
+    return self
   end
 
-  self.scale = scale
-
-  self:resizeWindow()
-  self:updateDrawOffset()
+  self._scale = scale
 
   return self
+    :_resizeWindow()
+    :_updateDrawOffset()
 end
 
-function Screen:resizeWindow()
+function Screen:_resizeWindow()
   local currentW, currentH, flags = love.window.getMode()
-  local newW = self.scale * self.width
-  local newH = self.scale * self.height
+  local newW = self._scale * self._width
+  local newH = self._scale * self._height
   if not love.window.getFullscreen() and (currentW ~= newW or currentH ~= newH) then
     love.window.setMode(newW, newH, flags)
   end
+
+  return self
+end
+
+function Screen:_saveScale()
+  self._savedScale = self._scale
+
+  return self
+end
+
+function Screen:_restoreScale()
+  return self:setScale(self._savedScale)
 end
 
 function Screen:increaseScale()
-  self:setScale(self.scale + 1)
-
   return self
+    :setScale(self._scale + 1)
+    :_saveScale()
 end
 
 function Screen:decreaseScale()
-  self:setScale(self.scale - 1)
-
   return self
+    :setScale(self._scale - 1)
+    :_saveScale()
 end
 
 function Screen:toggleFullscreen()
   if love.window.getFullscreen() then
     love.window.setFullscreen(false)
-    self:setScale(2)
+    self:_restoreScale()
 
   else
-    self:setMaxScale()
+    self
+      :_saveScale()
+      :setMaxScale()
     love.window.setFullscreen(true)
-    self:updateDrawOffset()
+    self:_updateDrawOffset()
   end
+
+  return self
 end
 
 function Screen:setMaxScale()
   local desktopW, desktopH = love.window.getDesktopDimensions()
-  local maxScaleX = math.floor(desktopW / self.width)
-  local maxScaleY = math.floor(desktopH / self.height)
+  local maxScaleX = math.floor(desktopW / self._width)
+  local maxScaleY = math.floor(desktopH / self._height)
   local scale = math.min(maxScaleX, maxScaleY)
-  self:setScale(scale)
+
+  return self:setScale(scale)
 end
 
-function Screen:updateDrawOffset()
+function Screen:_updateDrawOffset()
   if love.window.getFullscreen() then
     -- When fullscreen, center screen on monitor
     local desktopW, desktopH = love.window.getDesktopDimensions()
-    local scaledWidth  = self.width * self.scale
-    local scaledHeight = self.height * self.scale
-    self.drawOffsetX = math.floor((desktopW - scaledWidth) / 2)
-    self.drawOffsetY = math.floor((desktopH - scaledHeight) / 2)
+    local scaledWidth  = self._width * self._scale
+    local scaledHeight = self._height * self._scale
+    self._drawOffsetX = math.floor((desktopW - scaledWidth) / 2)
+    self._drawOffsetY = math.floor((desktopH - scaledHeight) / 2)
 
   else
-    self.drawOffsetX = 0
-    self.drawOffsetY = 0
+    self._drawOffsetX = 0
+    self._drawOffsetY = 0
   end
+
+  return self
 end
 
-function Screen:draw()
-  love.graphics.setCanvas()
-  love.graphics.setColor(255, 255, 255, 255)
+function Screen:draw(drawFunc, ...)
+  local previousCanvas = love.graphics.getCanvas()
 
-  love.graphics.draw(self.canvas, self.drawOffsetX, self.drawOffsetY, 0, self.scale, self.scale)
+  love.graphics.setCanvas(self._canvas)
+  love.graphics.clear()
+  drawFunc(...)
+
+  love.graphics.setCanvas(previousCanvas)
+  love.graphics.draw(self._canvas, self._drawOffsetX, self._drawOffsetY, 0, self._scale, self._scale)
 
   return self
 end

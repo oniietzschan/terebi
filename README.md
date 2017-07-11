@@ -1,10 +1,11 @@
 terebi
 ======
 
-A simple library to handle pixel-perfect scaling of window content in Love2D.
-
 [![Build Status](https://travis-ci.org/oniietzschan/terebi.svg?branch=master)](https://travis-ci.org/oniietzschan/terebi)
 [![Coverage Status](https://coveralls.io/repos/github/oniietzschan/terebi/badge.svg?branch=master)](https://coveralls.io/github/oniietzschan/terebi?branch=master)
+[![Alex](https://img.shields.io/badge/alex-never_racist-brightgreen.svg)](http://alexjs.com/)
+
+A simple library to handle pixel-perfect scaling of window content in Love2D.
 
 Example
 -------
@@ -13,7 +14,7 @@ Example
 local Terebi = require 'terebi'
 
 function love.load(arg)
-  -- Set nearest-neighbour scaling, disables mouse. Calling this is optional.
+  -- Set nearest-neighbour scaling. Calling this is optional.
   Terebi.initializeLoveDefaults()
 
   -- Parameters: game width, game height, starting scale factor
@@ -35,19 +36,14 @@ function love.update(dt)
 end
 
 function love.draw()
-  love.graphics.setCanvas(screen:getCanvas())
-
-  -- Your drawing logic starts here.
-  love.graphics.setColor(150, 181 , 218)
-  love.graphics.rectangle('fill', 50, 50, 50, 50)
-  -- Your drawing logic ends here.
-
-  screen:draw()
+  screen:draw(function()
+    -- <Your drawing logic goes here.>
+  end)
 end
+
 ```
 
 Todo
 ----
 
 * Maximum scale should take window borders into consideration. (Unless borderless!)
-* After exiting full screen, should return to previous window scale factor.
