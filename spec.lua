@@ -48,8 +48,42 @@ describe('Terebi:', function()
 
       assert.are.same(320, screen._width)
       assert.are.same(240, screen._height)
-      assert.are.same(2, screen:getScale())
+      assert.are.same(2, screen._scale)
       assert.are.same(2, screen._savedScale)
+    end)
+  end)
+
+  describe('When calling Screen methods:', function()
+    local screen
+
+    before_each(function()
+      screen = Terebi.newScreen(320, 240, 2)
+    end)
+
+    it('getScale should return scale', function()
+      assert.are.same(2, screen:getScale())
+    end)
+
+    it('draw should draw to canvas', function()
+      local originalCanvas = {id = 'originalCanvas'}
+      local terebiCanvas = screen._canvas
+
+      _G.love.graphics.getCanvas = spy.new(function()
+        return originalCanvas
+      end)
+      _G.love.graphics.setCanvas = noop()
+      _G.love.graphics.clear = noop()
+      _G.love.graphics.draw = noop()
+
+      local drawFunc = noop()
+      screen:draw(drawFunc, 'arg1', 'arg2')
+
+      assert.spy(love.graphics.setCanvas).was.called(2)
+      assert.spy(love.graphics.setCanvas).was.called_with(terebiCanvas)
+      assert.spy(love.graphics.clear).was.called()
+      assert.spy(drawFunc).was.called_with('arg1', 'arg2')
+      assert.spy(love.graphics.setCanvas).was.called_with(originalCanvas)
+      assert.spy(love.graphics.draw).was.called_with(terebiCanvas, 0, 0, 0, 2, 2)
     end)
   end)
 end)
