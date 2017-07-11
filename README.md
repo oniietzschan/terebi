@@ -3,7 +3,6 @@ terebi
 
 [![Build Status](https://travis-ci.org/oniietzschan/terebi.svg?branch=master)](https://travis-ci.org/oniietzschan/terebi)
 [![Codecov](https://codecov.io/gh/oniietzschan/terebi/branch/master/graph/badge.svg)](https://codecov.io/gh/oniietzschan/terebi)
-[![Coverage Status](https://coveralls.io/repos/github/oniietzschan/terebi/badge.svg?branch=master)](https://coveralls.io/github/oniietzschan/terebi?branch=master)
 [![Alex](https://img.shields.io/badge/alex-never_racist-brightgreen.svg)](http://alexjs.com/)
 
 A simple library to handle pixel-perfect scaling of window content in Love2D.
