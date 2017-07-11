@@ -46,10 +46,10 @@ describe('Terebi:', function()
 
       assert.spy(love.graphics.newCanvas).was.called_with(320, 240)
 
-      assert.are.same(320, screen.width)
-      assert.are.same(240, screen.height)
-      assert.are.same({320, 240}, screen:getCanvas())
+      assert.are.same(320, screen._width)
+      assert.are.same(240, screen._height)
       assert.are.same(2, screen:getScale())
+      assert.are.same(2, screen._savedScale)
     end)
   end)
 end)
