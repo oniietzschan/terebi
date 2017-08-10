@@ -46,4 +46,5 @@ end
 Todo
 ----
 
+* Fix totally fucked up behaviour in macOS when multiple monitors are available.
 * Maximum scale should take window borders into consideration. (Unless borderless!)
