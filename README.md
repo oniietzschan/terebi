@@ -48,6 +48,5 @@ end
 Todo
 ----
 
-* Works with maximize window controls
+* Works with window resizing.
 * High DPI scaling.
-* Maximum scale should take window borders into consideration. (Unless borderless!)
