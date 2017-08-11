@@ -55,7 +55,7 @@ screen:getScale(3)
 -- Gets the current scale factor.
 screen:getScale()
 
--- Sets scale to the largest factor which can fit in the current monitor.
+-- Sets scale to the largest factor which can fit on the current monitor.
 screen:setMaxScale()
 ```
 
