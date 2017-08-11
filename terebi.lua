@@ -1,4 +1,31 @@
-local Terebi = {}
+local Terebi = {
+  _VERSION     = 'terebi v0.1.0',
+  _URL         = 'https://github.com/oniietzschan/terebi',
+  _DESCRIPTION = 'Graphics scaling library for Love2D.',
+  _LICENSE     = [[
+    Massachusecchu... あれっ！ Massachu... chu... chu... License!
+
+    Copyright (c) 1789 Retia Adolf
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED 【AS IZ】, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE. PLEASE HAVE A FUN AND BE GENTLE WITH THIS SOFTWARE.
+  ]]
+}
 
 
 
@@ -32,12 +59,9 @@ function Screen:getScale()
 end
 
 function Screen:setScale(scale)
-  local desktopW, desktopH = love.window.getDesktopDimensions()
-  if scale <= 0 or (self._width * scale > desktopW) or (self._height * scale > desktopH) then
-    return self
-  end
+  assert(type(scale) == 'number')
 
-  self._scale = scale
+  self._scale = math.floor(math.max(1, math.min(scale, self:_getMaxScale())))
 
   return self
     :_resizeWindow()
@@ -94,12 +118,15 @@ function Screen:toggleFullscreen()
 end
 
 function Screen:setMaxScale()
+  return self:setScale(self:_getMaxScale())
+end
+
+function Screen:_getMaxScale()
   local desktopW, desktopH = love.window.getDesktopDimensions()
   local maxScaleX = math.floor(desktopW / self._width)
   local maxScaleY = math.floor(desktopH / self._height)
-  local scale = math.min(maxScaleX, maxScaleY)
 
-  return self:setScale(scale)
+  return math.min(maxScaleX, maxScaleY)
 end
 
 function Screen:_updateDrawOffset()

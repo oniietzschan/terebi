@@ -72,49 +72,88 @@ describe('Terebi:', function()
         _G.love.window.setMode = noop()
       end)
 
-      it('setScale should set the scale', function()
-        screen:setScale(1)
+      describe('When calling setScale:', function ()
+        it('setScale should set the scale', function()
+          screen:setScale(1)
 
-        assert.are.same(1, screen._scale)
-        assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+          assert.are.same(1, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+        end)
+
+        it('setScale should set floor the scale when it is a non-integer', function()
+          screen:setScale(1.5)
+
+          assert.are.same(1, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+        end)
+
+        it('setScale should set scale to 1 when passed a number below 1', function()
+          screen:setScale(0)
+
+          assert.are.same(1, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+        end)
+
+        it('setScale should throw an error when passed a non-number', function()
+          assert.error(function() screen:setScale(nil) end)
+        end)
       end)
 
-      it('setScale should do nothing when passed an invalid number', function()
-        screen:setScale(0)
-        screen:setScale(-1)
+      describe('When calling increaseScale:', function ()
+        it('increaseScale should set the scale', function()
+          screen:increaseScale()
 
-        assert.spy(love.window.setMode).was_not.called()
+          assert.are.same(3, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(960, 720, {'flags'})
+        end)
+
+        it('increaseScale should not set scale above maximum scale', function()
+          screen
+            :setScale(5)
+            :increaseScale()
+
+          assert.are.same(5, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
+        end)
       end)
 
-      it('increaseScale should set the scale', function()
-        screen:increaseScale()
+      describe('When calling decreaseScale:', function ()
+        it('decreaseScale should set the scale', function()
+          screen:decreaseScale()
 
-        assert.are.same(3, screen._scale)
-        assert.spy(love.window.setMode).was.called_with(960, 720, {'flags'})
+          assert.are.same(1, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+        end)
+
+        it('decreaseScale should not set scale below 1', function()
+          screen
+            :setScale(1)
+            :decreaseScale()
+
+          assert.are.same(1, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+        end)
       end)
 
-      it('decreaseScale should set the scale', function()
-        screen:decreaseScale()
+      describe('When calling setMaxScale:', function ()
+        it('setMaxScale should set the scale', function()
+          screen:setMaxScale()
 
-        assert.are.same(1, screen._scale)
-        assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+          assert.are.same(5, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
+        end)
       end)
 
-      it('setMaxScale should set the scale', function()
-        screen:setMaxScale()
+      describe('When calling toggleFullscreen:', function ()
+        it('toggleFullscreen should toggle fullscreen and maximize scale', function()
+          _G.love.window.setFullscreen = noop()
 
-        assert.are.same(5, screen._scale)
-        assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
-      end)
+          screen:toggleFullscreen()
 
-      it('toggleFullscreen should toggle fullscreen and maximize scale', function()
-        _G.love.window.setFullscreen = noop()
-
-        screen:toggleFullscreen()
-
-        assert.are.same(5, screen._scale)
-        assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
-        assert.spy(love.window.setFullscreen).was.called_with(true)
+          assert.are.same(5, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
+          assert.spy(love.window.setFullscreen).was.called_with(true)
+        end)
       end)
     end)
 
