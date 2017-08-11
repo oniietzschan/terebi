@@ -45,6 +45,20 @@ end
 
 ```
 
+Additional Functionality
+-------
+
+```lua
+-- Sets the scale factor.
+screen:getScale(3)
+
+-- Gets the current scale factor.
+screen:getScale()
+
+-- Sets scale to the largest factor which can fit in the current monitor.
+screen:setMaxScale()
+```
+
 Todo
 ----
 
