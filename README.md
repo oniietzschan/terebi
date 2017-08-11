@@ -50,7 +50,7 @@ Additional Functionality
 
 ```lua
 -- Sets the scale factor.
-screen:getScale(3)
+screen:setScale(3)
 
 -- Gets the current scale factor.
 screen:getScale()
