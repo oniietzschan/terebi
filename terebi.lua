@@ -1,5 +1,5 @@
 local Terebi = {
-  _VERSION     = 'terebi v0.1.0',
+  _VERSION     = 'terebi v0.2.0',
   _URL         = 'https://github.com/oniietzschan/terebi',
   _DESCRIPTION = 'Graphics scaling library for Love2D.',
   _LICENSE     = [[
@@ -45,13 +45,28 @@ function Terebi.newScreen(...)
 end
 
 function Screen:initialize(width, height, scale)
+  assert(type(width) == 'number')
+  assert(type(height) == 'number')
+  assert(type(scale) == 'number')
+
   self._width = width
   self._height = height
   self._canvas = love.graphics.newCanvas(width, height)
 
   return self
+    :setBackgroundColor(0, 0, 0)
     :setScale(scale)
     :_saveScale()
+end
+
+function Screen:setBackgroundColor(r, g, b)
+  assert(type(r) == 'number')
+  assert(type(g) == 'number')
+  assert(type(b) == 'number')
+
+  self._backgroundColor = {r, g, b}
+
+  return self
 end
 
 function Screen:getScale()
@@ -107,11 +122,11 @@ function Screen:toggleFullscreen()
     self:_restoreScale()
 
   else
-    self
-      :_saveScale()
-      :setMaxScale()
+    self:_saveScale()
     love.window.setFullscreen(true)
-    self:_updateDrawOffset()
+    self
+      :setMaxScale()
+      :_updateDrawOffset()
   end
 
   return self
@@ -147,6 +162,8 @@ function Screen:_updateDrawOffset()
 end
 
 function Screen:draw(drawFunc, ...)
+  assert(type(drawFunc) == 'function', type(drawFunc))
+
   local previousCanvas = love.graphics.getCanvas()
 
   love.graphics.setCanvas(self._canvas)
@@ -154,6 +171,14 @@ function Screen:draw(drawFunc, ...)
   drawFunc(...)
 
   love.graphics.setCanvas(previousCanvas)
+  -- Draw background if it would be visible
+  if self._drawOffsetX ~= 0 or self._drawOffsetY ~= 0 then
+    local r, g, b = love.graphics.getColor()
+    love.graphics.setColor(unpack(self._backgroundColor))
+    love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
+    love.graphics.setColor(r, g, b)
+  end
+  -- Draw screen
   love.graphics.draw(self._canvas, self._drawOffsetX, self._drawOffsetY, 0, self._scale, self._scale)
 
   return self

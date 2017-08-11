@@ -19,6 +19,8 @@ function love.load(arg)
 
   -- Parameters: game width, game height, starting scale factor
   screen = Terebi.newScreen(320, 240, 2)
+    -- This color will used for fullscreen letterboxing when content doesn't fit exactly. (Optional)
+    :setBackgroundColor(64, 64, 64)
 
   input = initializeSomeDopeAsHeckInputLibrary()
 end
