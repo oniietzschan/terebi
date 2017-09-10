@@ -38,9 +38,6 @@ function love.draw()
     -- <Your drawing logic goes here.>
   end)
 end
-
-
-
 ```
 
 Additional Functionality
