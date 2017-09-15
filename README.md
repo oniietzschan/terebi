@@ -21,18 +21,14 @@ function love.load(arg)
   screen = Terebi.newScreen(320, 240, 2)
     -- This color will used for fullscreen letterboxing when content doesn't fit exactly. (Optional)
     :setBackgroundColor(64, 64, 64)
-
-  input = initializeSomeDopeAsHeckInputLibrary()
 end
 
-function love.update(dt)
-  if input:pressed('i') then
+function love.keypressed(key)
+  if     key == 'i' then
     screen:increaseScale()
-  end
-  if input:pressed('d') then
+  elseif key == 'd' then
     screen:decreaseScale()
-  end
-  if input:pressed('f') then
+  elseif key == 'f' then
     screen:toggleFullscreen()
   end
 end
@@ -42,7 +38,6 @@ function love.draw()
     -- <Your drawing logic goes here.>
   end)
 end
-
 ```
 
 Additional Functionality
