@@ -1,5 +1,5 @@
 package = "terebi"
-version = "0.2.0"
+version = "0.2.0-1"
 source = {
   url = "https://github.com/oniietzschan/terebi/archive/0.2.0.tar.gz",
   dir = "terebi-0.2.0"
