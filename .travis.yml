@@ -17,16 +17,11 @@ install:
   # - luarocks install luacheck
   - luarocks install busted
   - luarocks install luacov
-  - luarocks install luacov-coveralls
+  # - luarocks install luacov-coveralls
 
 script:
   # - luacheck --std busted+max+love *.lua spec
   - busted --verbose --coverage spec.lua
-
-notifications:
-  email:
-    on_success: change
-    on_failure: always
 
 after_success:
   # Codecov
@@ -34,3 +29,8 @@ after_success:
   - bash <(curl -s https://codecov.io/bash)
   # # Coveralls
   # - luacov-coveralls -e $TRAVIS_BUILD_DIR/lua_install
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
