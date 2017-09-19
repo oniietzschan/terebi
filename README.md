@@ -12,6 +12,7 @@ Example
 
 ```lua
 local Terebi = require 'terebi'
+local screen
 
 function love.load(arg)
   -- Set nearest-neighbour scaling. Calling this is optional.
