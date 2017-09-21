@@ -10,6 +10,7 @@ describe('Terebi:', function()
   before_each(function()
     _G.love = {
       graphics = {},
+      mouse = {},
       window = {},
     }
     _G.love.graphics.newCanvas = spy.new(function(w, h)
@@ -206,13 +207,11 @@ describe('Terebi:', function()
       local drawFunc
 
       before_each(function()
-        originalCanvas = {id = 'originalCanvas'}
         terebiCanvas = screen._canvas
 
-        _G.love.graphics.getCanvas = spy.new(function()
-          return originalCanvas
-        end)
+        _G.love.graphics.push = noop()
         _G.love.graphics.setCanvas = noop()
+        _G.love.graphics.pop = noop()
         _G.love.graphics.clear = noop()
         _G.love.graphics.draw = noop()
 
@@ -223,11 +222,11 @@ describe('Terebi:', function()
       it('should draw to canvas', function()
         screen:draw(drawFunc, 'arg1', 'arg2')
 
-        assert.spy(love.graphics.setCanvas).was.called(2)
+        assert.spy(love.graphics.push).was.called_with('all')
         assert.spy(love.graphics.setCanvas).was.called_with(terebiCanvas)
         assert.spy(love.graphics.clear).was.called()
         assert.spy(drawSpy).was.called_with('arg1', 'arg2')
-        assert.spy(love.graphics.setCanvas).was.called_with(originalCanvas)
+        assert.spy(love.graphics.pop).was.called()
         assert.spy(love.graphics.draw).was.called_with(terebiCanvas, 0, 0, 0, 2, 2)
       end)
 
@@ -246,11 +245,11 @@ describe('Terebi:', function()
         screen._drawOffsetY = 120
         screen:draw(drawFunc, 'arg1', 'arg2')
 
-        assert.spy(love.graphics.setCanvas).was.called(2)
+        assert.spy(love.graphics.push).was.called_with('all')
         assert.spy(love.graphics.setCanvas).was.called_with(terebiCanvas)
         assert.spy(love.graphics.clear).was.called()
         assert.spy(drawSpy).was.called_with('arg1', 'arg2')
-        assert.spy(love.graphics.setCanvas).was.called_with(originalCanvas)
+        assert.spy(love.graphics.pop).was.called()
         assert.spy(love.graphics.getColor).was.called()
         assert.spy(love.graphics.getDimensions).was.called()
         assert.spy(love.graphics.rectangle).was.called_with('fill', 0, 0, 640, 480)
@@ -260,6 +259,56 @@ describe('Terebi:', function()
 
       it('should throw error when draw function is not provided', function()
         assert.error(function() screen:draw() end)
+      end)
+    end)
+
+    describe('When calling getMousePosition', function ()
+      it('should convert mouse coordinates on window to screen coordinates', function ()
+        _G.love.mouse.getPosition = spy.new(function()
+          return 0, 0
+        end)
+        assert.same({0, 0}, {screen:getMousePosition()})
+        assert.spy(love.mouse.getPosition).was.called()
+
+        _G.love.mouse.getPosition = spy.new(function()
+          return 100, 256
+        end)
+        assert.same({50, 128}, {screen:getMousePosition()})
+        assert.spy(love.mouse.getPosition).was.called()
+      end)
+    end)
+
+    describe('When calling windowToScreen', function ()
+      it('should convert window coordinates to screen coordinates', function ()
+        assert.same({0, 0}, {screen:windowToScreen(0, 0)})
+        assert.same({50, 128}, {screen:windowToScreen(100, 256)})
+      end)
+
+      describe('When screen has a draw offset', function ()
+        it('should convert window coordinates to screen coordinates', function ()
+          screen._drawOffsetX = 30
+          screen._drawOffsetY = 20
+
+          assert.same({0, 0}, {screen:windowToScreen(30, 20)})
+          assert.same({35, 118}, {screen:windowToScreen(100, 256)})
+        end)
+      end)
+    end)
+
+    describe('When calling screenToWindow', function ()
+      it('should convert screen coordinates to window coordinates', function ()
+        assert.same({0, 0}, {screen:screenToWindow(0, 0)})
+        assert.same({100, 256}, {screen:screenToWindow(50, 128)})
+      end)
+
+      describe('When screen has a draw offset', function ()
+        it('should convert screen coordinates to window coordinates', function ()
+          screen._drawOffsetX = 30
+          screen._drawOffsetY = 20
+
+          assert.same({30, 20}, {screen:screenToWindow(0, 0)})
+          assert.same({130, 276}, {screen:screenToWindow(50, 128)})
+        end)
       end)
     end)
   end)

@@ -1,5 +1,5 @@
 local Terebi = {
-  _VERSION     = 'terebi v0.2.0',
+  _VERSION     = 'terebi v0.3.0',
   _URL         = 'https://github.com/oniietzschan/terebi',
   _DESCRIPTION = 'Graphics scaling library for Love2D.',
   _LICENSE     = [[
@@ -164,13 +164,12 @@ end
 function Screen:draw(drawFunc, ...)
   assert(type(drawFunc) == 'function', type(drawFunc))
 
-  local previousCanvas = love.graphics.getCanvas()
-
+  love.graphics.push('all')
   love.graphics.setCanvas(self._canvas)
   love.graphics.clear()
   drawFunc(...)
+  love.graphics.pop()
 
-  love.graphics.setCanvas(previousCanvas)
   -- Draw background if it would be visible
   if self._drawOffsetX ~= 0 or self._drawOffsetY ~= 0 then
     local r, g, b = love.graphics.getColor()
@@ -182,6 +181,26 @@ function Screen:draw(drawFunc, ...)
   love.graphics.draw(self._canvas, self._drawOffsetX, self._drawOffsetY, 0, self._scale, self._scale)
 
   return self
+end
+
+function Screen:getMousePosition()
+  return self:windowToScreen(love.mouse.getPosition())
+end
+
+function Screen:windowToScreen(x, y)
+  assert(type(x) == 'number')
+  assert(type(y) == 'number')
+
+  return (x - self._drawOffsetX) / self._scale,
+         (y - self._drawOffsetY) / self._scale
+end
+
+function Screen:screenToWindow(x, y)
+  assert(type(x) == 'number')
+  assert(type(y) == 'number')
+
+  return x * self._scale + self._drawOffsetX,
+         y * self._scale + self._drawOffsetY
 end
 
 

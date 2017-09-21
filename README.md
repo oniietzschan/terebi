@@ -42,7 +42,7 @@ end
 ```
 
 Additional Functionality
--------
+------------------------
 
 ```lua
 -- Sets the scale factor.
@@ -53,6 +53,30 @@ screen:getScale()
 
 -- Sets scale to the largest factor which can fit on the current monitor.
 screen:setMaxScale()
+
+-- Gets the position of the mouse cursor in virtual screen (game) coordinates.
+local mouseX, mouseY = screen:getMousePosition()
+
+-- Converts window coordinates to virtual screen (game) coordinates.
+local gameX, gameY = screen:windowToScreen(windowX, windowY)
+
+-- Converts virtual screen (game) coordinates to window coordinates.
+local windowX, windowY = screen:screenToWindow(gameX, gameY)
+```
+
+Installation
+------------
+
+The most simple way to install terebi is to simply copy `terebi.lua` into your game directory and `require 'terebi'`.
+
+Advanced users may wish to install terebi using [loverocks](https://github.com/Alloyed/loverocks), by adding something like the following to their `conf.lua`:
+
+```lua
+function love.conf(t)
+  t.dependencies = {
+    'terebi >= 0.3.0, < 2',
+  }
+end
 ```
 
 Todo
@@ -60,3 +84,5 @@ Todo
 
 * Works with window resizing.
 * High DPI scaling.
+* Support the ability to start the game at the highest scale window which will fit on the screen.
+  * "You can also prevent the window from being created before main.lua is loaded, by doing t.window = false in love.conf. You will need to call love.window.setMode before calling any love.graphics functions though."
