@@ -29,18 +29,10 @@ describe('Terebi:', function()
       return 640, 480, {'flags'}
     end)
     _G.love.window.fromPixels = spy.new(function(x, y)
-      if y then
-        return x / pixelScale, y / pixelScale
-      else
-        return x / pixelScale
-      end
+      return x / pixelScale, y / pixelScale
     end)
     _G.love.window.toPixels = spy.new(function(x, y)
-      if y then
-        return x * pixelScale, y * pixelScale
-      else
-        return x * pixelScale
-      end
+      return x * pixelScale, y * pixelScale
     end)
   end)
 
