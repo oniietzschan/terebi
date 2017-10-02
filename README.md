@@ -5,7 +5,12 @@ terebi
 [![Codecov](https://codecov.io/gh/oniietzschan/terebi/branch/master/graph/badge.svg)](https://codecov.io/gh/oniietzschan/terebi)
 [![Alex](https://img.shields.io/badge/alex-never_racist-brightgreen.svg)](http://alexjs.com/)
 
-A simple library to handle pixel-perfect scaling of window content in Love2D.
+A simple library to handle pixel-perfect scaling of window content in Love2D. Its features are:
+
+* Simple interface for switching between fullscreen and windowed modes.
+* Centers and letterboxes the view when scaled content does not exactly fit fullscreen resolution, with configurable letterbox color.
+* HighDPI support with no additional code changes.
+* A handful of utility functions for converting window coordinates to game coordinates, and vice versa.
 
 Example
 -------
@@ -74,7 +79,7 @@ Advanced users may wish to install terebi using [loverocks](https://github.com/A
 ```lua
 function love.conf(t)
   t.dependencies = {
-    'terebi >= 0.3.0, < 2',
+    'terebi >= 0.4.0, < 2',
   }
 end
 ```
@@ -82,7 +87,6 @@ end
 Todo
 ----
 
-* Works with window resizing.
-* High DPI scaling.
+* Support rescaling after manual window resize.
 * Support the ability to start the game at the highest scale window which will fit on the screen.
   * "You can also prevent the window from being created before main.lua is loaded, by doing t.window = false in love.conf. You will need to call love.window.setMode before calling any love.graphics functions though."

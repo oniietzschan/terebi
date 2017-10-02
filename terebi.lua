@@ -1,5 +1,5 @@
 local Terebi = {
-  _VERSION     = 'terebi v0.3.0',
+  _VERSION     = 'terebi v0.4.0',
   _URL         = 'https://github.com/oniietzschan/terebi',
   _DESCRIPTION = 'Graphics scaling library for Love2D.',
   _LICENSE     = [[
@@ -85,8 +85,7 @@ end
 
 function Screen:_resizeWindow()
   local currentW, currentH, flags = love.window.getMode()
-  local newW = self._scale * self._width
-  local newH = self._scale * self._height
+  local newW, newH = love.window.fromPixels(self._width * self._scale, self._height * self._scale)
   if not love.window.getFullscreen() and (currentW ~= newW or currentH ~= newH) then
     love.window.setMode(newW, newH, flags)
   end
@@ -137,7 +136,7 @@ function Screen:setMaxScale()
 end
 
 function Screen:_getMaxScale()
-  local desktopW, desktopH = love.window.getDesktopDimensions()
+  local desktopW, desktopH = self:_getDesktopDimensions()
   local maxScaleX = math.floor(desktopW / self._width)
   local maxScaleY = math.floor(desktopH / self._height)
 
@@ -147,7 +146,7 @@ end
 function Screen:_updateDrawOffset()
   if love.window.getFullscreen() then
     -- When fullscreen, center screen on monitor
-    local desktopW, desktopH = love.window.getDesktopDimensions()
+    local desktopW, desktopH = self:_getDesktopDimensions()
     local scaledWidth  = self._width * self._scale
     local scaledHeight = self._height * self._scale
     self._drawOffsetX = math.floor((desktopW - scaledWidth) / 2)
@@ -159,6 +158,10 @@ function Screen:_updateDrawOffset()
   end
 
   return self
+end
+
+function Screen:_getDesktopDimensions()
+  return love.window.toPixels(love.window.getDesktopDimensions())
 end
 
 function Screen:draw(drawFunc, ...)

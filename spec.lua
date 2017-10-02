@@ -7,7 +7,10 @@ local noop = function()
 end
 
 describe('Terebi:', function()
+  local pixelScale
+
   before_each(function()
+    pixelScale = 1
     _G.love = {
       graphics = {},
       mouse = {},
@@ -24,6 +27,20 @@ describe('Terebi:', function()
     end)
     _G.love.window.getMode = spy.new(function()
       return 640, 480, {'flags'}
+    end)
+    _G.love.window.fromPixels = spy.new(function(x, y)
+      if y then
+        return x / pixelScale, y / pixelScale
+      else
+        return x / pixelScale
+      end
+    end)
+    _G.love.window.toPixels = spy.new(function(x, y)
+      if y then
+        return x * pixelScale, y * pixelScale
+      else
+        return x * pixelScale
+      end
     end)
   end)
 
@@ -118,7 +135,7 @@ describe('Terebi:', function()
       end)
 
       describe('When calling increaseScale:', function ()
-        it('increaseScale should set the scale', function()
+        it('increaseScale should increase the scale', function()
           screen:increaseScale()
 
           assert.are.same(3, screen._scale)
@@ -136,7 +153,7 @@ describe('Terebi:', function()
       end)
 
       describe('When calling decreaseScale:', function ()
-        it('decreaseScale should set the scale', function()
+        it('decreaseScale should decrease the scale', function()
           screen:decreaseScale()
 
           assert.are.same(1, screen._scale)
@@ -196,6 +213,33 @@ describe('Terebi:', function()
           assert.are.same(false, isFullscreen)
           assert.spy(love.window.setMode).was.called_with(640, 480, {'flags'})
           assert.spy(love.window.setFullscreen).was.called(2)
+        end)
+      end)
+
+      describe('When high density pixel scale:', function ()
+        before_each(function ()
+          pixelScale = 2
+        end)
+
+        it('increaseScale should increase the scale', function()
+          screen:increaseScale()
+
+          assert.are.same(3, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(480, 360, {'flags'})
+        end)
+
+        it('decreaseScale should set the scale', function()
+          screen:decreaseScale()
+
+          assert.are.same(1, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(160, 120, {'flags'})
+        end)
+
+        it('setMaxScale should set the scale', function()
+          screen:setMaxScale()
+
+          assert.are.same(10, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(1600, 1200, {'flags'})
         end)
       end)
     end)
