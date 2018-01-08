@@ -3,7 +3,6 @@ terebi
 
 [![Build Status](https://travis-ci.org/oniietzschan/terebi.svg?branch=master)](https://travis-ci.org/oniietzschan/terebi)
 [![Codecov](https://codecov.io/gh/oniietzschan/terebi/branch/master/graph/badge.svg)](https://codecov.io/gh/oniietzschan/terebi)
-[![Alex](https://img.shields.io/badge/alex-never_racist-brightgreen.svg)](http://alexjs.com/)
 
 A simple library to handle pixel-perfect scaling of window content in Love2D. Its features are:
 
@@ -39,10 +38,12 @@ function love.keypressed(key)
   end
 end
 
+local function drawFn()
+  -- <Your drawing logic goes here.>
+end
+
 function love.draw()
-  screen:draw(function()
-    -- <Your drawing logic goes here.>
-  end)
+  screen:draw(drawFn) -- Additional arguments will be passed to drawFn.
 end
 ```
 
@@ -87,6 +88,6 @@ end
 Todo
 ----
 
-* Support rescaling after manual window resize.
+* Support rescaling after manual window resize. (love.resize, oh my god!!)
 * Support the ability to start the game at the highest scale window which will fit on the screen.
   * "You can also prevent the window from being created before main.lua is loaded, by doing t.window = false in love.conf. You will need to call love.window.setMode before calling any love.graphics functions though."
