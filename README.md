@@ -3,6 +3,7 @@ terebi
 
 [![Build Status](https://travis-ci.org/oniietzschan/terebi.svg?branch=master)](https://travis-ci.org/oniietzschan/terebi)
 [![Codecov](https://codecov.io/gh/oniietzschan/terebi/branch/master/graph/badge.svg)](https://codecov.io/gh/oniietzschan/terebi)
+![Love Versions](https://img.shields.io/badge/Love2d-11%2C%200.10-blue.svg)
 
 A simple library to handle pixel-perfect scaling of window content in Love2D. Its features are:
 
@@ -25,7 +26,7 @@ function love.load(arg)
   -- Parameters: game width, game height, starting scale factor
   screen = Terebi.newScreen(320, 240, 2)
     -- This color will used for fullscreen letterboxing when content doesn't fit exactly. (Optional)
-    :setBackgroundColor(64, 64, 64)
+    :setBackgroundColor(0.25, 0.25, 0.25)
 end
 
 function love.keypressed(key)
