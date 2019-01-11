@@ -34,7 +34,7 @@ function love.keypressed(key)
     screen:increaseScale()
   elseif key == 'd' then
     screen:decreaseScale()
-  elseif key == 'f' then
+  elseif key == 'f' then -- I recommend listening for F11 and Alt+Enter.
     screen:toggleFullscreen()
   end
 end
@@ -83,6 +83,5 @@ The most simple way to install terebi is to simply copy `terebi.lua` into your g
 Todo
 ----
 
-* Support rescaling after manual window resize. (love.resize, oh my god!!)
 * Support the ability to start the game at the highest scale window which will fit on the screen.
   * "You can also prevent the window from being created before main.lua is loaded, by doing t.window = false in love.conf. You will need to call love.window.setMode before calling any love.graphics functions though."
