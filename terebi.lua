@@ -1,5 +1,5 @@
 local Terebi = {
-  _VERSION     = 'terebi v0.4.0',
+  _VERSION     = 'terebi v1.0.0',
   _URL         = 'https://github.com/oniietzschan/terebi',
   _DESCRIPTION = 'Graphics scaling library for Love2D.',
   _LICENSE     = [[
@@ -45,17 +45,28 @@ function Terebi.newScreen(...)
 end
 
 function Screen:initialize(width, height, scale)
+  assert(type(scale) == 'number')
+
+  return self
+    :setBackgroundColor(0, 0, 0)
+    :setDimensions(width, height, scale)
+end
+
+function Screen:getDimensions()
+  return self._width, self._height
+end
+
+function Screen:setDimensions(width, height, scale, isSkipWindowResize)
   assert(type(width) == 'number')
   assert(type(height) == 'number')
-  assert(type(scale) == 'number')
+  scale = scale or self._scale
 
   self._width = width
   self._height = height
   self._canvas = love.graphics.newCanvas(width, height)
 
   return self
-    :setBackgroundColor(0, 0, 0)
-    :setScale(scale)
+    :setScale(scale, isSkipWindowResize)
     :_saveScale()
 end
 
@@ -73,14 +84,15 @@ function Screen:getScale()
   return self._scale
 end
 
-function Screen:setScale(scale)
+function Screen:setScale(scale, isSkipWindowResize)
   assert(type(scale) == 'number')
 
   self._scale = math.floor(math.max(1, math.min(scale, self:_getMaxScale())))
 
-  return self
-    :_resizeWindow()
-    :_updateDrawOffset()
+  if isSkipWindowResize ~= true then
+    self:_resizeWindow()
+  end
+  return self:_updateDrawOffset()
 end
 
 function Screen:_resizeWindow()
@@ -103,15 +115,15 @@ function Screen:_restoreScale()
   return self:setScale(self._savedScale)
 end
 
-function Screen:increaseScale()
+function Screen:increaseScale(isSkipWindowResize)
   return self
-    :setScale(self._scale + 1)
+    :setScale(self._scale + 1, isSkipWindowResize)
     :_saveScale()
 end
 
-function Screen:decreaseScale()
+function Screen:decreaseScale(isSkipWindowResize)
   return self
-    :setScale(self._scale - 1)
+    :setScale(self._scale - 1, isSkipWindowResize)
     :_saveScale()
 end
 
@@ -143,19 +155,30 @@ function Screen:_getMaxScale()
   return math.min(maxScaleX, maxScaleY)
 end
 
-function Screen:_updateDrawOffset()
-  if love.window.getFullscreen() then
-    -- When fullscreen, center screen on monitor
-    local desktopW, desktopH = self:_getDesktopDimensions()
-    local scaledWidth  = self._width * self._scale
-    local scaledHeight = self._height * self._scale
-    self._drawOffsetX = math.floor((desktopW - scaledWidth) / 2)
-    self._drawOffsetY = math.floor((desktopH - scaledHeight) / 2)
+function Screen:handleResize()
+  return self
+    :setScale(self:_getMaxScaleForWindow(), true)
+    :_updateDrawOffset()
+end
 
-  else
-    self._drawOffsetX = 0
-    self._drawOffsetY = 0
-  end
+function Screen:_getMaxScaleForWindow()
+  local w, h = love.window.getMode()
+  return self:_getMaxScaleForDimensions(w, h)
+end
+
+function Screen:_getMaxScaleForDimensions(w, h)
+  local maxScaleX = math.floor(w / self._width)
+  local maxScaleY = math.floor(h / self._height)
+
+  return math.min(maxScaleX, maxScaleY)
+end
+
+function Screen:_updateDrawOffset()
+  local w, h = love.window.getMode()
+  local scaledWidth  = self._width * self._scale
+  local scaledHeight = self._height * self._scale
+  self._drawOffsetX = math.floor((w - scaledWidth) / 2)
+  self._drawOffsetY = math.floor((h - scaledHeight) / 2)
 
   return self
 end

@@ -46,6 +46,10 @@ end
 function love.draw()
   screen:draw(drawFn) -- Additional arguments will be passed to drawFn.
 end
+
+function love.resize(w, h)
+  screen:handleResize()
+end
 ```
 
 Additional Functionality
@@ -75,16 +79,6 @@ Installation
 ------------
 
 The most simple way to install terebi is to simply copy `terebi.lua` into your game directory and `require 'terebi'`.
-
-Advanced users may wish to install terebi using [loverocks](https://github.com/Alloyed/loverocks), by adding something like the following to their `conf.lua`:
-
-```lua
-function love.conf(t)
-  t.dependencies = {
-    'terebi >= 0.4.0, < 2',
-  }
-end
-```
 
 Todo
 ----
