@@ -94,6 +94,10 @@ describe('Terebi:', function()
       assert.are.same(2, screen:getScale())
     end)
 
+    it('getDimensions should return width and height', function()
+      assert.are.same({320, 240}, {screen:getDimensions()})
+    end)
+
     describe('When changing Screen scale:', function()
       before_each(function()
         _G.love.window.setMode = noop()
