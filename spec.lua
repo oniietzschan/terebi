@@ -298,6 +298,38 @@ describe('Terebi:', function()
       end)
     end)
 
+    describe('When calling handleResize', function()
+      local isMaximized
+
+      before_each(function()
+        _G.love.window.getMode = spy.new(function()
+          return 1000, 1000, {'flags'}
+        end)
+        _G.love.window.isMaximized = spy.new(function()
+          return isMaximized
+        end)
+        _G.love.window.setMode = noop()
+      end)
+
+      it('should update scale and resize window when not maximized', function()
+        isMaximized = false
+        screen:handleResize()
+        assert.same(3, screen:getScale())
+        assert.spy(love.window.getMode).was.called()
+        assert.spy(love.window.isMaximized).was.called()
+        assert.spy(love.window.setMode).was.called_with(960, 720, {'flags'})
+      end)
+
+      it('should update scale and not resize window when maximized', function()
+        isMaximized = true
+        screen:handleResize()
+        assert.same(3, screen:getScale())
+        assert.spy(love.window.getMode).was.called()
+        assert.spy(love.window.isMaximized).was.called()
+        assert.spy(love.window.setMode).was.not_called()
+      end)
+    end)
+
     describe('When calling getMousePosition', function ()
       it('should convert mouse coordinates on window to screen coordinates', function ()
         _G.love.mouse.getPosition = spy.new(function()
