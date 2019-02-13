@@ -1,5 +1,5 @@
 local Terebi = {
-  _VERSION     = 'terebi v1.0.0',
+  _VERSION     = 'terebi v1.1.0',
   _URL         = 'https://github.com/oniietzschan/terebi',
   _DESCRIPTION = 'Graphics scaling library for Love2D.',
   _LICENSE     = [[
@@ -156,8 +156,9 @@ function Screen:_getMaxScale()
 end
 
 function Screen:handleResize()
+  local skipResize = love.window.isMaximized()
   return self
-    :setScale(self:_getMaxScaleForWindow(), true)
+    :setScale(self:_getMaxScaleForWindow(), skipResize)
     :_updateDrawOffset()
 end
 
