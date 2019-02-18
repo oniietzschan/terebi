@@ -4,7 +4,9 @@ local quads = {}
 local screen
 local time = 0
 
-local WIDTH, HEIGHT = 240, 160
+local SCALE  = SCALE  or 3
+local WIDTH  = WIDTH  or 240
+local HEIGHT = HEIGHT or 160
 
 function love.load(arg)
   -- Set nearest-neighbour scaling. Calling this is optional.
@@ -18,7 +20,7 @@ function love.load(arg)
   end
 
   -- Parameters: game width, game height, starting scale factor
-  screen = Terebi.newScreen(WIDTH, HEIGHT, 3)
+  screen = Terebi.newScreen(WIDTH, HEIGHT, SCALE)
     -- This color will used for fullscreen letterboxing when content doesn't fit exactly. (Optional)
     :setBackgroundColor(0.25, 0.25, 0.25)
 end

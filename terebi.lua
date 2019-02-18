@@ -1,7 +1,7 @@
 local Terebi = {
-  _VERSION     = 'terebi v1.1.0',
+  _VERSION     = 'terebi v2.0.0',
   _URL         = 'https://github.com/oniietzschan/terebi',
-  _DESCRIPTION = 'Graphics scaling library for Love2D.',
+  _DESCRIPTION = 'Resolution scaling for pixel perfectionist in Love2D.',
   _LICENSE     = [[
     Massachusecchu... あれっ！ Massachu... chu... chu... License!
 
@@ -29,6 +29,46 @@ local Terebi = {
 
 
 
+local FLOAT = 'float'
+local INTEGER = 'integer'
+
+local SCALING_SHADER_GSGL = [[
+number verticalPhase = 0.0001;
+extern number edge;
+extern number width;
+extern number height;
+vec4 effect(vec4 c, Image tex, vec2 tc, vec2 sc) {
+  // For some reason it's necessary to ever so slightly increment the Y-axis of the texture coords.
+  // I don't totally understand why this is necessary, the same thing is not true about the X-axis.
+  tc.y = tc.y + verticalPhase;
+  c = Texel(tex, tc);
+  vec2 locationWithinTexel = vec2(
+    fract(tc.x * width),
+    fract(tc.y * height)
+  );
+  if (locationWithinTexel.x > edge) { // Horizontal Border
+    vec2 neighbourCoords = vec2(tc.x + (1 / width), tc.y);
+    c += Texel(tex, neighbourCoords);
+    if (locationWithinTexel.y > edge) { // Diagonal Border
+      neighbourCoords = vec2(tc.x, tc.y + (1 / height));
+      c += Texel(tex, neighbourCoords);
+      neighbourCoords = vec2(tc.x + (1 / width), tc.y + (1 / height));
+      c += Texel(tex, neighbourCoords);
+      c /= 4;
+    } else {  // Strictly Horizontal Border
+      c /= 2;
+    }
+  } else if (locationWithinTexel.y > edge) { // Strictly Vertical Border
+    vec2 neighbourCoords = vec2(tc.x, tc.y + (1 / height));
+    c += Texel(tex, neighbourCoords);
+    c /= 2;
+  }
+  return c;
+}
+]]
+
+
+
 function Terebi.initializeLoveDefaults()
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.graphics.setLineStyle('rough')
@@ -47,9 +87,18 @@ end
 function Screen:initialize(width, height, scale)
   assert(type(scale) == 'number')
 
+  self._shader = love.graphics.newShader(SCALING_SHADER_GSGL)
+
   return self
+    :setMode(FLOAT)
     :setBackgroundColor(0, 0, 0)
     :setDimensions(width, height, scale)
+end
+
+function Screen:setMode(mode)
+  assert(mode == FLOAT or mode == INTEGER, 'mode must be "float" or "integer", got: ' .. tostring(mode))
+  self._mode = mode
+  return self
 end
 
 function Screen:getDimensions()
@@ -64,6 +113,9 @@ function Screen:setDimensions(width, height, scale, isSkipWindowResize)
   self._width = width
   self._height = height
   self._canvas = love.graphics.newCanvas(width, height)
+
+  self._shader:send("width", self._width)
+  self._shader:send("height", self._height)
 
   return self
     :setScale(scale, isSkipWindowResize)
@@ -87,7 +139,12 @@ end
 function Screen:setScale(scale, isSkipWindowResize)
   assert(type(scale) == 'number')
 
-  self._scale = math.floor(math.max(1, math.min(scale, self:_getMaxScale())))
+  self._scale = math.max(1, math.min(scale, self:_getMaxScale()))
+  if self._mode == INTEGER then
+    self._scale = math.floor(self._scale)
+  end
+
+  self._shader:send("edge", 1 - (0.5 / self._scale))
 
   if isSkipWindowResize ~= true then
     self:_resizeWindow()
@@ -168,8 +225,12 @@ function Screen:_getMaxScaleForWindow()
 end
 
 function Screen:_getMaxScaleForDimensions(w, h)
-  local maxScaleX = math.floor(w / self._width)
-  local maxScaleY = math.floor(h / self._height)
+  local maxScaleX = w / self._width
+  local maxScaleY = h / self._height
+  if self._mode == INTEGER then
+    maxScaleX = math.floor(maxScaleX)
+    maxScaleY = math.floor(maxScaleY)
+  end
 
   return math.min(maxScaleX, maxScaleY)
 end
@@ -204,8 +265,16 @@ function Screen:draw(drawFunc, ...)
     love.graphics.rectangle('fill', 0, 0, love.graphics.getDimensions())
     love.graphics.setColor(r, g, b)
   end
+
   -- Draw screen
+  local isNonIntegerScale = math.floor(self._scale) ~= self._scale
+  if isNonIntegerScale then
+    love.graphics.setShader(self._shader)
+  end
   love.graphics.draw(self._canvas, self._drawOffsetX, self._drawOffsetY, 0, self._scale, self._scale)
+  if isNonIntegerScale then
+    love.graphics.setShader()
+  end
 
   return self
 end

@@ -20,7 +20,7 @@ local Terebi = require 'terebi'
 local screen
 
 function love.load(arg)
-  -- Set nearest-neighbour scaling. Calling this is optional.
+  -- Set nearest-neighbour scaling. (Optional)
   Terebi.initializeLoveDefaults()
 
   -- Parameters: game width, game height, starting scale factor
@@ -30,11 +30,12 @@ function love.load(arg)
 end
 
 function love.keypressed(key)
-  if     key == 'i' then
+  local isAltDown = love.keyboard.isDown('ralt') or love.keyboard.isDown('lalt')
+  if     key == '+' then
     screen:increaseScale()
-  elseif key == 'd' then
+  elseif key == '-' then
     screen:decreaseScale()
-  elseif key == 'f' then -- I recommend listening for F11 and Alt+Enter.
+  elseif key == 'f11' or (isAltDown and key == 'return') then
     screen:toggleFullscreen()
   end
 end
@@ -78,7 +79,7 @@ local windowX, windowY = screen:screenToWindow(gameX, gameY)
 Installation
 ------------
 
-The most simple way to install terebi is to simply copy `terebi.lua` into your game directory and `require 'terebi'`.
+Copy `terebi.lua` into your game directory and `require 'terebi'`.
 
 Todo
 ----
