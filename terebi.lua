@@ -1,46 +1,48 @@
-local Terebi = {
-  _VERSION     = 'terebi v2.0.0',
-  _URL         = 'https://github.com/oniietzschan/terebi',
-  _DESCRIPTION = 'Resolution scaling for pixel perfectionist in Love2D.',
-  _LICENSE     = [[
-    Massachusecchu... あれっ！ Massachu... chu... chu... License!
+--[[
 
-    Copyright (c) 1789 Retia Adolf
+terebi v2.1.0
+=============
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+Resolution scaling for pixel perfectionist in Love2D, by shru.
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+https://github.com/oniietzschan/terebi
 
-    THE SOFTWARE IS PROVIDED 【AS IZ】, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE. PLEASE HAVE A FUN AND BE GENTLE WITH THIS SOFTWARE.
-  ]]
-}
+Massachusecchu... あれっ！ Massachu... chu... chu... License!
+-----------------------------------------------------------
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 【AS IZ】, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. PLEASE HAVE A FUN AND BE GENTLE WITH THIS SOFTWARE.
+
+--]]
 
 local FLOAT = 'float'
 local INTEGER = 'integer'
 
 local SCALING_SHADER_GSGL = [[
-number verticalPhase = 0.0001;
+number phase = 0.0001;
 extern number edge;
 extern number width;
 extern number height;
 vec4 effect(vec4 c, Image tex, vec2 tc, vec2 sc) {
-  // For some reason it's necessary to ever so slightly increment the Y-axis of the texture coords.
-  // I don't totally understand why this is necessary, the same thing is not true about the X-axis.
-  tc.y = tc.y + verticalPhase;
+  // For some reason offsetting the position slightly in both directions produces more consistent results.
+  // I don't totally understand why this is necessary, but it probably has to do with fuzzy float comparisons.
+  tc.x = tc.x + phase;
+  tc.y = tc.y + phase;
   c = Texel(tex, tc);
   vec2 locationWithinTexel = vec2(
     fract(tc.x * width),
@@ -67,14 +69,12 @@ vec4 effect(vec4 c, Image tex, vec2 tc, vec2 sc) {
 }
 ]]
 
-
+local Terebi = {}
 
 function Terebi.initializeLoveDefaults()
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.graphics.setLineStyle('rough')
 end
-
-
 
 local Screen = {}
 local ScreenMetaTable = {__index = Screen}
@@ -194,7 +194,6 @@ function Screen:toggleFullscreen()
     love.window.setFullscreen(true)
     self
       :setMaxScale()
-      :_updateDrawOffset()
   end
 
   return self
@@ -216,7 +215,6 @@ function Screen:handleResize()
   local skipResize = love.window.isMaximized()
   return self
     :setScale(self:_getMaxScaleForWindow(), skipResize)
-    :_updateDrawOffset()
 end
 
 function Screen:_getMaxScaleForWindow()
@@ -298,7 +296,5 @@ function Screen:screenToWindow(x, y)
   return x * self._scale + self._drawOffsetX,
          y * self._scale + self._drawOffsetY
 end
-
-
 
 return Terebi

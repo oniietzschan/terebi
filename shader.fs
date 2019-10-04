@@ -1,13 +1,14 @@
-number verticalPhase = 0.0001;
+number phase = 0.0001;
 
 extern number edge;
 extern number width;
 extern number height;
 
 vec4 effect(vec4 c, Image tex, vec2 tc, vec2 sc) {
-  // For some reason it's necessary to ever so slightly increment the Y-axis of the texture coords.
-  // I don't totally understand why this is necessary, the same thing is not true about the X-axis.
-  tc.y = tc.y + verticalPhase;
+  // For some reason offsetting the position slightly in both directions produces more consistent results.
+  // I don't totally understand why this is necessary, but it probably has to do with fuzzy float comparisons.
+  tc.x = tc.x + phase;
+  tc.y = tc.y + phase;
   c = Texel(tex, tc);
 
   vec2 locationWithinTexel = vec2(

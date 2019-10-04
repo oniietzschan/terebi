@@ -19,6 +19,12 @@ describe('Terebi:', function()
     _G.love.graphics.newCanvas = spy.new(function(w, h)
       return {w, h}
     end)
+    _G.love.graphics.newShader = spy.new(function(w, h)
+      return {
+        send = noop(),
+      }
+    end)
+    _G.love.graphics.setShader = noop()
     _G.love.window.getDesktopDimensions = spy.new(function()
       return 1600, 1200
     end)
@@ -111,11 +117,20 @@ describe('Terebi:', function()
           assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
         end)
 
-        it('setScale should set floor the scale when it is a non-integer', function()
+        it('setScale should floor the scale when passed a non-integer with "integer" mode', function()
+          screen:setMode('integer')
           screen:setScale(1.5)
 
           assert.are.same(1, screen._scale)
           assert.spy(love.window.setMode).was.called_with(320, 240, {'flags'})
+        end)
+
+        it('setScale should set scale when passed a non-integer with "float" mode', function()
+          screen:setMode('float')
+          screen:setScale(1.5)
+
+          assert.are.same(1.5, screen._scale)
+          assert.spy(love.window.setMode).was.called_with(480, 360, {'flags'})
         end)
 
         it('setScale should set scale to 1 when passed a number below 1', function()
@@ -315,22 +330,52 @@ describe('Terebi:', function()
         _G.love.window.setMode = noop()
       end)
 
-      it('should update scale and resize window when not maximized', function()
-        isMaximized = false
-        screen:handleResize()
-        assert.same(3, screen:getScale())
-        assert.spy(love.window.getMode).was.called()
-        assert.spy(love.window.isMaximized).was.called()
-        assert.spy(love.window.setMode).was.called_with(960, 720, {'flags'})
+      describe('In integer mode', function()
+        before_each(function()
+          screen:setMode('integer')
+        end)
+
+        it('should update scale and resize window when not maximized', function()
+          isMaximized = false
+          screen:handleResize()
+          assert.same(3, screen:getScale())
+          assert.spy(love.window.getMode).was.called()
+          assert.spy(love.window.isMaximized).was.called()
+          assert.spy(love.window.setMode).was.called_with(960, 720, {'flags'})
+        end)
+
+        it('should update scale and not resize window when maximized', function()
+          isMaximized = true
+          screen:handleResize()
+          assert.same(3, screen:getScale())
+          assert.spy(love.window.getMode).was.called()
+          assert.spy(love.window.isMaximized).was.called()
+          assert.spy(love.window.setMode).was.not_called()
+        end)
       end)
 
-      it('should update scale and not resize window when maximized', function()
-        isMaximized = true
-        screen:handleResize()
-        assert.same(3, screen:getScale())
-        assert.spy(love.window.getMode).was.called()
-        assert.spy(love.window.isMaximized).was.called()
-        assert.spy(love.window.setMode).was.not_called()
+      describe('In float mode', function()
+        before_each(function()
+          screen:setMode('float')
+        end)
+
+        it('should update scale and resize window when not maximized', function()
+          isMaximized = false
+          screen:handleResize()
+          assert.same(3.125, screen:getScale())
+          assert.spy(love.window.getMode).was.called()
+          assert.spy(love.window.isMaximized).was.called()
+          assert.spy(love.window.setMode).was.called_with(1000, 750, {'flags'})
+        end)
+
+        it('should update scale and not resize window when maximized', function()
+          isMaximized = true
+          screen:handleResize()
+          assert.same(3.125, screen:getScale())
+          assert.spy(love.window.getMode).was.called()
+          assert.spy(love.window.isMaximized).was.called()
+          assert.spy(love.window.setMode).was.not_called()
+        end)
       end)
     end)
 
