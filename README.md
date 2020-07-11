@@ -4,6 +4,7 @@ terebi
 [![Build Status](https://travis-ci.org/oniietzschan/terebi.svg?branch=master)](https://travis-ci.org/oniietzschan/terebi)
 [![Codecov](https://codecov.io/gh/oniietzschan/terebi/branch/master/graph/badge.svg)](https://codecov.io/gh/oniietzschan/terebi)
 ![Love Versions](https://img.shields.io/badge/Love2d-11%2C%200.10-blue.svg)
+![Public Domain](https://img.shields.io/badge/license-public%20domain-blue)
 
 A simple library to handle pixel-perfect scaling of window content in Love2D. Its features are:
 
